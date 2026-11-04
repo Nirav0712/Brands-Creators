@@ -3,12 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "description": "Brands & Creators — Production B2B Creative Marketplace SaaS",
+  "main": "apps/api/dist/main.js",
   "workspaces": [
     "packages/*",
     "apps/*"
   ],
   "scripts": {
-    "start": "node scripts/start-all.js",
+    "start": "node apps/api/dist/main.js",
+    "start:local": "node scripts/start-all.js",
     "dev": "node scripts/start-all.js --dev",
     "cleanup": "node scripts/cleanup-test-data.js",
     "test:browser:p31": "node scripts/test-phase-31-browser-qa.js",
