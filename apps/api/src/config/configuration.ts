@@ -7,7 +7,7 @@ export default () => ({
   adminUrl: process.env.ADMIN_URL || 'http://localhost:3001',
   apiUrl: process.env.API_URL || 'http://localhost:4000',
   database: {
-    uri: process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/brands_creators_dev',
+    uri: process.env.MONGODB_URI || (isProd ? '' : 'mongodb://127.0.0.1:27017/brands_creators_dev'),
   },
   jwt: {
     accessSecret: isProd ? process.env.JWT_ACCESS_SECRET : (process.env.JWT_ACCESS_SECRET || 'dev_jwt_access_secret_brands_creators_2026'),

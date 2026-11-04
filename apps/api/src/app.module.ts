@@ -53,27 +53,49 @@ import { AppThrottlerGuard } from './common/guards/app-throttler.guard';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
         const logger = new Logger('DatabaseModule');
-        let uri = configService.get<string>('database.uri') || 'mongodb://127.0.0.1:27017/brands_creators_dev';
+        const nodeEnv = (configService.get<string>('nodeEnv') || process.env.NODE_ENV || 'development').toLowerCase().trim();
+        const isProd = nodeEnv === 'production';
+
+        let uri = configService.get<string>('database.uri') || '';
+
+        // In production, MONGODB_URI is strictly required and must not be empty
+        if (!uri || !uri.trim()) {
+          if (isProd) {
+            logger.error('❌ [FATAL] MONGODB_URI is required in production but is missing or empty.');
+            throw new Error('MONGODB_URI is required in production but is missing or empty. Please set MONGODB_URI in your Hostinger environment variables.');
+          }
+          uri = 'mongodb://127.0.0.1:27017/brands_creators_dev';
+        }
+
+        const sanitizeUri = (u: string) => u.replace(/\/\/[^:]+:[^@]+@/, '//***:***@');
+        const sanitizedUri = sanitizeUri(uri);
 
         if (uri.startsWith('mongodb+srv://') || uri.includes('mongodb.net')) {
           try {
-            logger.log('Testing connection to MongoDB Atlas Cluster...');
-            const testConn = await mongoose.createConnection(uri, { serverSelectionTimeoutMS: 2500 }).asPromise();
+            logger.log(`Testing connection to MongoDB Atlas Cluster (${sanitizedUri})...`);
+            const testConn = await mongoose.createConnection(uri, { serverSelectionTimeoutMS: 5000 }).asPromise();
             await testConn.close();
             logger.log('✅ Connected to MongoDB Atlas successfully.');
           } catch (err: any) {
-            logger.warn(`⚠️ MongoDB Atlas unreachable (${err.message}). Falling back to local MongoDB daemon.`);
-            uri = 'mongodb://127.0.0.1:27017/brands_creators_dev';
+            const rawErrMsg = err?.message || String(err);
+            const sanitizedErrMsg = rawErrMsg.replace(/\/\/[^:]+:[^@]+@/g, '//***:***@');
+            if (isProd) {
+              logger.error(`❌ [FATAL] MongoDB Atlas connection failed in production: ${sanitizedErrMsg}`);
+              throw new Error(`Failed to connect to MongoDB Atlas in production: ${sanitizedErrMsg}`);
+            } else {
+              logger.warn(`⚠️ MongoDB Atlas unreachable (${sanitizedErrMsg}). Falling back to local MongoDB daemon.`);
+              uri = 'mongodb://127.0.0.1:27017/brands_creators_dev';
+            }
           }
         } else {
-          logger.log(`Connecting to MongoDB instance at: ${uri}`);
+          logger.log(`Connecting to MongoDB instance at: ${sanitizedUri}`);
         }
 
         return {
           uri,
           autoIndex: true,
           serverSelectionTimeoutMS: 5000,
-          retryAttempts: 2,
+          retryAttempts: isProd ? 1 : 2,
           retryDelay: 1000,
         };
       },

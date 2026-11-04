@@ -97,9 +97,18 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api/docs', app, document);
 
-  await app.listen(port);
-  logger.log(`🚀 Brands & Creators API is running on: http://localhost:${port}/api/v1`);
-  logger.log(`📚 Swagger API Docs available at: http://localhost:${port}/api/docs`);
+  await app.listen(port, '0.0.0.0');
+  logger.log(`🚀 Brands & Creators API is running on: http://0.0.0.0:${port}/api/v1`);
+  logger.log(`📚 Swagger API Docs available at: http://0.0.0.0:${port}/api/docs`);
 }
 
-bootstrap();
+bootstrap().catch((err: any) => {
+  const logger = new Logger('Bootstrap');
+  const rawMessage = err?.message || String(err);
+  // Redact potential connection string credentials or bearer tokens from fatal startup logs
+  const safeMessage = rawMessage
+    .replace(/\/\/[^:]+:[^@]+@/g, '//***:***@')
+    .replace(/(?:Bearer\s+|token=)[a-zA-Z0-9_\-\.]{16,}/gi, 'Bearer ***');
+  logger.error(`❌ [FATAL] Application startup failed: ${safeMessage}`);
+  process.exit(1);
+});
