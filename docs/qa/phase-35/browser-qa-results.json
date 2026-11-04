@@ -1,0 +1,299 @@
+[
+  {
+    "id": 1,
+    "testName": "API Gateway Health Status",
+    "action": "GET http://localhost:4000/api/v1/health",
+    "expected": "HTTP 200 with status=\"ok\"",
+    "actual": "status=\"ok\"",
+    "evidence": "{\"success\":true,\"message\":\"Operation successful\",\"status\":\"ok\",\"data\":{\"status\":\"ok\",\"timestamp\":\"2026-11-04T05:23:46.891Z\",\"uptime\":488,\"database\":\"connected\",\"environment\":\"development\",\"version\":\"1.0.0\"}}",
+    "status": "PASS"
+  },
+  {
+    "id": 2,
+    "testName": "Super Admin Authentication",
+    "action": "POST /api/v1/auth/login with valid super admin credentials",
+    "expected": "HTTP 200 with success=true and signed JWT access token",
+    "actual": "success=true, hasAccessToken=true, roles=[\"SUPER_ADMIN\",\"ADMIN\"]",
+    "evidence": "userId=undefined, email=admin@brandsandcreators.com",
+    "status": "PASS"
+  },
+  {
+    "id": 3,
+    "testName": "Demo Creator Authentication",
+    "action": "POST /api/v1/auth/login with creator@demo.com credentials",
+    "expected": "HTTP 200 with success=true and signed access token",
+    "actual": "success=true, hasAccessToken=true",
+    "evidence": "userId=undefined",
+    "status": "PASS"
+  },
+  {
+    "id": 4,
+    "testName": "Demo Creator Canonical Profile Resolution",
+    "action": "GET /api/v1/creators/me with creator bearer token",
+    "expected": "HTTP 200 with success=true and non-null profile (slug=demo-creator)",
+    "actual": "success=true, slug=demo-creator",
+    "evidence": "displayName=Alex Morgan",
+    "status": "PASS"
+  },
+  {
+    "id": 5,
+    "testName": "Demo Brand Authentication",
+    "action": "POST /api/v1/auth/login with brand@demo.com credentials",
+    "expected": "HTTP 200 with success=true and signed access token",
+    "actual": "success=true, hasAccessToken=true",
+    "evidence": "userId=undefined",
+    "status": "PASS"
+  },
+  {
+    "id": 6,
+    "testName": "Demo Brand Canonical Profile Resolution",
+    "action": "GET /api/v1/brands/me with brand bearer token",
+    "expected": "HTTP 200 with success=true and non-null profile (slug=demo-brand)",
+    "actual": "success=true, slug=demo-brand, company=Demo Brand Studio",
+    "evidence": "companyName=Demo Brand Studio",
+    "status": "PASS"
+  },
+  {
+    "id": 7,
+    "testName": "Unauthenticated API Protection",
+    "action": "GET /api/v1/admin/dashboard-metrics without Authorization header",
+    "expected": "HTTP 401 Unauthorized",
+    "actual": "HTTP 401",
+    "evidence": "HTTP status=401",
+    "status": "PASS"
+  },
+  {
+    "id": 8,
+    "testName": "Role Guard: Creator Blocked From Admin APIs",
+    "action": "GET /api/v1/admin/dashboard-metrics with Creator JWT",
+    "expected": "HTTP 403 Forbidden",
+    "actual": "HTTP 403",
+    "evidence": "HTTP status=403",
+    "status": "PASS"
+  },
+  {
+    "id": 9,
+    "testName": "Role Guard: Brand Blocked From Admin APIs",
+    "action": "GET /api/v1/admin/dashboard-metrics with Brand JWT",
+    "expected": "HTTP 403 Forbidden",
+    "actual": "HTTP 403",
+    "evidence": "HTTP status=403",
+    "status": "PASS"
+  },
+  {
+    "id": 10,
+    "testName": "Role Guard: Creator Prevented from Brand Requirements Posting",
+    "action": "POST /api/v1/requirements with Creator JWT",
+    "expected": "HTTP 403 Forbidden",
+    "actual": "HTTP 403",
+    "evidence": "HTTP status=403",
+    "status": "PASS"
+  },
+  {
+    "id": 11,
+    "testName": "Marketplace Landing Page Navigation & Hero",
+    "action": "Navigate to http://localhost:3000",
+    "expected": "Nav bar present, page content loaded, zero horizontal scroll overflow",
+    "actual": "hasNav=true, scrollWidth=1434 <= 1440",
+    "evidence": "Screenshot: 01_marketplace_home.png",
+    "status": "PASS"
+  },
+  {
+    "id": 12,
+    "testName": "Creator Profile View (/creators/demo-creator)",
+    "action": "Navigate to http://localhost:3000/creators/demo-creator",
+    "expected": "Creator profile content rendered, zero overflow",
+    "actual": "hasProfileInfo=true",
+    "evidence": "Screenshot: 02_creator_profile.png",
+    "status": "PASS"
+  },
+  {
+    "id": 13,
+    "testName": "Brand Profile View (/brands/demo-brand)",
+    "action": "Navigate to http://localhost:3000/brands/demo-brand",
+    "expected": "Brand company information rendered, zero overflow",
+    "actual": "hasBrandInfo=true",
+    "evidence": "Screenshot: 03_brand_profile.png",
+    "status": "PASS"
+  },
+  {
+    "id": 14,
+    "testName": "Community & Production Team Directory (/people)",
+    "action": "Navigate to http://localhost:3000/people",
+    "expected": "People / production partner directory rendered",
+    "actual": "hasDirectory=true",
+    "evidence": "Screenshot: 04_people_directory.png",
+    "status": "PASS"
+  },
+  {
+    "id": 15,
+    "testName": "User Registration Form UI",
+    "action": "Navigate to http://localhost:3000/register",
+    "expected": "Email, password inputs and submit button present in DOM",
+    "actual": "hasEmail=true, hasPassword=true",
+    "evidence": "Screenshot: 05_register_page.png",
+    "status": "PASS"
+  },
+  {
+    "id": 16,
+    "testName": "User Login Form UI",
+    "action": "Navigate to http://localhost:3000/login",
+    "expected": "Login inputs and submit button present in DOM",
+    "actual": "hasLoginInput=true, hasSubmit=true",
+    "evidence": "Screenshot: 06_login_page.png",
+    "status": "PASS"
+  },
+  {
+    "id": 17,
+    "testName": "Creator Workspace Dashboard UI",
+    "action": "Navigate to http://localhost:3000/dashboard/creator with Creator session",
+    "expected": "Creator analytics and workspace navigation visible in DOM",
+    "actual": "hasDashboardContent=true",
+    "evidence": "Screenshot: 07_creator_dashboard.png",
+    "status": "PASS"
+  },
+  {
+    "id": 18,
+    "testName": "Creator Applications Management Workspace",
+    "action": "Navigate to http://localhost:3000/creator/applications",
+    "expected": "Applications tracker rendered",
+    "actual": "hasAppsContent=true",
+    "evidence": "Screenshot: 08_creator_applications.png",
+    "status": "PASS"
+  },
+  {
+    "id": 19,
+    "testName": "Brand Campaign Operations Dashboard",
+    "action": "Navigate to http://localhost:3000/dashboard/brand with Brand session",
+    "expected": "Brand overview and active campaign metrics displayed",
+    "actual": "hasBrandDash=true",
+    "evidence": "Screenshot: 09_brand_dashboard.png",
+    "status": "PASS"
+  },
+  {
+    "id": 20,
+    "testName": "Brand Requirements Briefs Management",
+    "action": "Navigate to http://localhost:3000/brand/requirements",
+    "expected": "Requirements listing workspace rendered in DOM",
+    "actual": "hasReqsList=true",
+    "evidence": "Screenshot: 10_brand_requirements.png",
+    "status": "PASS"
+  },
+  {
+    "id": 21,
+    "testName": "Real-Time Messaging Inbox UI",
+    "action": "Navigate to http://localhost:3000/inbox",
+    "expected": "Conversations pane and chat window rendered",
+    "actual": "hasInboxPane=true",
+    "evidence": "Screenshot: 11_inbox_messaging.png",
+    "status": "PASS"
+  },
+  {
+    "id": 22,
+    "testName": "Financial Escrow & Wallet UI",
+    "action": "Navigate to http://localhost:3000/wallet",
+    "expected": "Wallet balance and transaction log visible",
+    "actual": "hasWalletUI=true",
+    "evidence": "Screenshot: 12_wallet_balance.png",
+    "status": "PASS"
+  },
+  {
+    "id": 23,
+    "testName": "Admin Control Center Dashboard",
+    "action": "Navigate to http://localhost:3001 with Super Admin session",
+    "expected": "Platform health KPIs and navigation menu rendered",
+    "actual": "hasAdminOverview=true",
+    "evidence": "Screenshot: 13_admin_dashboard.png",
+    "status": "PASS"
+  },
+  {
+    "id": 24,
+    "testName": "Admin Creator Moderation & Verification Roster",
+    "action": "Navigate to http://localhost:3001/people/creators",
+    "expected": "Creator profiles roster displayed including demo creator",
+    "actual": "hasCreatorRoster=true",
+    "evidence": "Screenshot: 14_admin_creators_roster.png",
+    "status": "PASS"
+  },
+  {
+    "id": 25,
+    "testName": "Admin Brand Directory & Verification Management",
+    "action": "Navigate to http://localhost:3001/people/brands",
+    "expected": "Brand accounts roster displayed including demo brand",
+    "actual": "hasBrandRoster=true",
+    "evidence": "Screenshot: 15_admin_brands_roster.png",
+    "status": "PASS"
+  },
+  {
+    "id": 26,
+    "testName": "Admin Production Studio Partners Management",
+    "action": "Navigate to http://localhost:3001/people/production",
+    "expected": "Production roster view rendered",
+    "actual": "hasProdRoster=true",
+    "evidence": "Screenshot: 16_admin_production_roster.png",
+    "status": "PASS"
+  },
+  {
+    "id": 27,
+    "testName": "Admin Subscription Pricing Tiers Console",
+    "action": "Navigate to http://localhost:3001/subscriptions/plans",
+    "expected": "Subscription tier definitions and pricing matrix displayed",
+    "actual": "hasPlans=true",
+    "evidence": "Screenshot: 17_admin_subscription_plans.png",
+    "status": "PASS"
+  },
+  {
+    "id": 28,
+    "testName": "Admin Financial Escrow & Transactions Ledger",
+    "action": "Navigate to http://localhost:3001/payments",
+    "expected": "Platform payment processing and escrow log visible",
+    "actual": "hasPaymentsLedger=true",
+    "evidence": "Screenshot: 18_admin_payments_ledger.png",
+    "status": "PASS"
+  },
+  {
+    "id": 29,
+    "testName": "Admin System Feature Flags & Security Settings",
+    "action": "Navigate to http://localhost:3001/system/settings",
+    "expected": "Global system configuration toggles visible in DOM",
+    "actual": "hasSettingsToggles=true",
+    "evidence": "Screenshot: 19_admin_system_settings.png",
+    "status": "PASS"
+  },
+  {
+    "id": 30,
+    "testName": "Responsive Layout Verification (desktop_1440x900)",
+    "action": "Set viewport to 1440x900 (isMobile=false) on marketplace home",
+    "expected": "Zero horizontal scroll overflow (scrollWidth <= innerWidth)",
+    "actual": "scrollWidth=1434, innerWidth=1440, fits=true",
+    "evidence": "Screenshot: 20_responsive_desktop_1440x900.png",
+    "status": "PASS"
+  },
+  {
+    "id": 31,
+    "testName": "Responsive Layout Verification (laptop_1366x768)",
+    "action": "Set viewport to 1366x768 (isMobile=false) on marketplace home",
+    "expected": "Zero horizontal scroll overflow (scrollWidth <= innerWidth)",
+    "actual": "scrollWidth=1360, innerWidth=1366, fits=true",
+    "evidence": "Screenshot: 20_responsive_laptop_1366x768.png",
+    "status": "PASS"
+  },
+  {
+    "id": 32,
+    "testName": "Responsive Layout Verification (tablet_768x1024)",
+    "action": "Set viewport to 768x1024 (isMobile=false) on marketplace home",
+    "expected": "Zero horizontal scroll overflow (scrollWidth <= innerWidth)",
+    "actual": "scrollWidth=762, innerWidth=768, fits=true",
+    "evidence": "Screenshot: 20_responsive_tablet_768x1024.png",
+    "status": "PASS"
+  },
+  {
+    "id": 33,
+    "testName": "Responsive Layout Verification (mobile_390x844)",
+    "action": "Set viewport to 390x844 (isMobile=true) on marketplace home",
+    "expected": "Zero horizontal scroll overflow (scrollWidth <= innerWidth)",
+    "actual": "scrollWidth=390, innerWidth=390, fits=true",
+    "evidence": "Screenshot: 20_responsive_mobile_390x844.png",
+    "status": "PASS"
+  }
+]

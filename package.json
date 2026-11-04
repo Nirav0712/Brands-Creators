@@ -1,0 +1,49 @@
+{
+  "name": "brands-and-creators-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Brands & Creators — Production B2B Creative Marketplace SaaS",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "start": "node scripts/start-all.js",
+    "dev": "node scripts/start-all.js --dev",
+    "cleanup": "node scripts/cleanup-test-data.js",
+    "test:browser:p31": "node scripts/test-phase-31-browser-qa.js",
+    "build": "node node_modules/typescript/bin/tsc -p packages/types/tsconfig.json && node node_modules/typescript/bin/tsc -p apps/api/tsconfig.json && node node_modules/next/dist/bin/next build apps/web && node node_modules/next/dist/bin/next build apps/admin",
+    "build:types": "node node_modules/typescript/bin/tsc -p packages/types/tsconfig.json",
+    "build:api": "node node_modules/typescript/bin/tsc -p apps/api/tsconfig.json",
+    "build:web": "node node_modules/next/dist/bin/next build apps/web",
+    "build:admin": "node node_modules/next/dist/bin/next build apps/admin",
+    "dev:web": "node node_modules/next/dist/bin/next dev apps/web -p 3000",
+    "dev:admin": "node node_modules/next/dist/bin/next dev apps/admin -p 3001",
+    "dev:api": "node apps/api/dist/main.js",
+    "start:web": "node node_modules/next/dist/bin/next start apps/web -p 3000",
+    "start:admin": "node node_modules/next/dist/bin/next start apps/admin -p 3001",
+    "typecheck": "node node_modules/typescript/bin/tsc -p packages/types/tsconfig.json --noEmit && node node_modules/typescript/bin/tsc -p apps/api/tsconfig.json --noEmit && node node_modules/typescript/bin/tsc -p apps/web/tsconfig.json --noEmit && node node_modules/typescript/bin/tsc -p apps/admin/tsconfig.json --noEmit"
+  },
+  "keywords": [
+    "saas",
+    "marketplace",
+    "creators",
+    "brands",
+    "influencers",
+    "production",
+    "nestjs",
+    "nextjs",
+    "mongodb"
+  ],
+  "author": "Brands & Creators Engineering",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@nestjs/throttler": "^6.7.1",
+    "helmet": "^8.3.0",
+    "mongodb-memory-server": "^11.3.0",
+    "nodemailer": "^10.1.7"
+  },
+  "devDependencies": {
+    "@types/nodemailer": "^8.0.2"
+  }
+}

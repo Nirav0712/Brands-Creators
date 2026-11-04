@@ -1,0 +1,14 @@
+{
+  "name": "@brands-creators/types",
+  "version": "1.0.0",
+  "description": "Shared TypeScript types and interfaces for Brands & Creators",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rimraf dist"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}
